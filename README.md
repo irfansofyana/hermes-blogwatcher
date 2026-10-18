@@ -14,6 +14,20 @@ Read and manage your [original Blogwatcher](https://github.com/Hyaxia/blogwatche
 
 Summaries use retrieved text, not headlines. They show coverage and model attribution, reuse successful results for seven days (50 MiB cap), display older saved results as stale until eviction, and require consent before sending article text to your model provider. Hermes may retry or use configured fallback models; the plugin never retries a generation itself. Inaccessible/blocked pages produce an error, not a guessed summary. Private-network fetches are blocked.
 
+## Screenshots
+
+### Follow Hermes
+
+![Blogwatcher following the Hermes theme](docs/screenshots/follow-hermes.png)
+
+### Light
+
+![Blogwatcher with the light theme](docs/screenshots/light.png)
+
+### Dark
+
+![Blogwatcher with the dark theme](docs/screenshots/dark.png)
+
 ## Install
 
 On the **Hermes backend host**, ensure `blogwatcher` is on the service's PATH, then:
