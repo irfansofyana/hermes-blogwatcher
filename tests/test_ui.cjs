@@ -84,20 +84,23 @@ test('title opens details without inference or read mutations', () => {
 
 test('superseded loads cannot overwrite current results', async () => {
   let view, effect, index = 0;
-  const setters = [], pending = [], generation = { current: 0 };
+  // Every useRef has its own stable identity, as in React. Aliasing all refs
+  // to the request token makes unrelated reader refs corrupt this test's model.
+  const setters = [], pending = [], refs = [];
+  let refIndex = 0;
   const context = { URLSearchParams, window: {
     __HERMES_PLUGIN_SDK__: {
       React: { createElement: (type, props, ...children) => ({ type, props, children }) },
       hooks: {
         useState: value => { const n = index++; return [value, next => setters.push([n, next])]; },
-        useEffect: fn => { effect = fn; }, useRef: () => generation,
+        useEffect: fn => { effect = fn; }, useRef: initial => refs[refIndex++] ||= { current: initial },
       },
       fetchJSON: () => new Promise(resolve => pending.push(resolve)),
     }, __HERMES_PLUGINS__: { register: (id, fn) => { view = fn; } },
   }};
   vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../dashboard/dist/index.js'), 'utf8'), context);
   view(); const cleanup = effect(); if (cleanup) cleanup();
-  index = 0; view(); effect();
+  index = 0; refIndex = 0; view(); effect();
   pending[2]({ items: [] }); pending[3]({ items: ['new'], total: 1 });
   await new Promise(resolve => setImmediate(resolve));
   pending[0]({ items: [] }); pending[1]({ items: ['old'], total: 1 });

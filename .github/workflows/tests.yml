@@ -21,10 +21,10 @@ jobs:
         run: python -m pip install fastapi==0.133.1 pydantic==2.13.4 httpx==0.28.1
       - name: Python unit tests (live Hermes and CLI probes opt-in)
         run: python -m unittest discover -s tests -v
-      - name: Web UI behavior
-        run: node --test tests/test_ui.cjs
-      - name: Desktop UI behavior
-        run: node --experimental-vm-modules --test tests/test_desktop.cjs
+      - name: Generated UI stays in sync
+        run: node scripts/build-ui.cjs --check
+      - name: Web and Desktop UI behavior
+        run: node --experimental-vm-modules --test tests/test_ui.cjs tests/test_desktop.cjs tests/test_reader_ui.cjs
       - name: JavaScript syntax
         run: |
           node --check dashboard/dist/index.js
