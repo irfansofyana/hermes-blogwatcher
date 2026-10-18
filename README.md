@@ -52,10 +52,10 @@ On the backend, you can set `BLOGWATCHER_BIN` to the CLI's absolute path and `BL
 
 ## Data and permissions
 
-- The backend runs `blogwatcher` with argument lists, never a shell. The CLI reads its existing database and applies the source and read-state changes you request. Scans contact your subscribed sites.
-- Requested summaries fetch public HTTP(S) pages through short-lived Python retrieval and DNS workers. Article text goes to your configured Hermes model only after confirmation, as described above.
-- Saved summaries and source/model metadata are stored in `cache/blogwatcher-summaries` under the active Hermes home. They become stale after seven days and remain available until eviction, with a 50 MiB cache cap. The plugin reads Hermes's model configuration for its cache keys.
-- The plugin stores no credentials, collects no telemetry, and starts no scheduler, persistent background service or self-updater.
+- The backend runs `blogwatcher` under the Hermes service account, using argument lists rather than a shell. The CLI inherits the service environment and accesses its existing database. Source and read-state actions modify that data; adding or scanning sources may contact their configured sites.
+- Requested summaries use short-lived Python retrieval and DNS workers, which also inherit the service environment. They fetch public HTTP(S) pages; after confirmation, the retrieved text and source URL go to your configured Hermes model. Provider charges, retries and fallbacks may apply.
+- Saved summaries, source URLs, coverage labels, timestamps and model metadata are stored in `cache/blogwatcher-summaries` under the active Hermes home. Results become stale after seven days. Eviction runs after cache writes and targets a 50 MiB limit; stale entries can remain until then. The plugin reads Hermes's model configuration for cache keys. Appearance and density preferences stay in browser-local storage.
+- The plugin does not read credential stores directly or persist credentials. It collects no telemetry and starts no scheduler, persistent background service or self-updater.
 
 ## Development
 
