@@ -4,13 +4,13 @@ Read and manage your [Blogwatcher](https://github.com/Hyaxia/blogwatcher) subscr
 
 ## Features
 
-- Unread/all-article views, source filters, pagination and read/unread controls.
-- Follow Hermes, light and dark themes, with comfortable or compact layouts.
-- Multiple inline saved summaries, with explicit Summarize and Regenerate actions.
-- Add/remove sources and scan on demand. Removing a source also deletes its articles.
-- Read-only agent tools for articles and subscriptions.
+- Browse unread articles or your full inbox, filter by source, and mark articles read or unread. Results are paginated.
+- Choose Follow Hermes, light or dark, and switch between comfortable and compact layouts.
+- Open saved summaries inline and keep several articles expanded at once. Use Summarize or Regenerate when you want a new summary.
+- Add sources and scan for new articles. Removing a source also deletes its articles.
+- Let agents look up articles and subscriptions through read-only tools.
 
-Generating a summary retrieves article text and sends it to your configured Hermes model after confirmation. Provider costs, retries and fallback models may apply. Opening saved summaries does not fetch publisher content, run inference or mark articles read.
+The plugin asks for confirmation before generating a summary from article text with your configured Hermes model. Your provider may charge for this, and Hermes may use retries or fallback models. Opening a saved summary doesn't fetch publisher content, call a model or mark the article read.
 
 ## Screenshots
 
@@ -28,17 +28,19 @@ Generating a summary retrieves article text and sends it to your configured Herm
 
 ## Install
 
-Install the original Blogwatcher CLI on the **Hermes backend host** and ensure `blogwatcher` is on the service's PATH. The `blogwatcher-cli` fork is not supported. Then run:
+Install the original Blogwatcher CLI on the **Hermes backend host**, with `blogwatcher` available on the service's PATH. This plugin doesn't support the `blogwatcher-cli` fork.
+
+Install the plugin:
 
 ```bash
 hermes plugins install https://github.com/irfansofyana/hermes-blogwatcher --enable
 ```
 
-Restart the dashboard/API server and open **Blogwatcher** in the web sidebar. For Desktop on the same machine, use **Capabilities → Plugins → Rescan**, then enable Blogwatcher.
+Restart the dashboard/API server, then open **Blogwatcher** in the web sidebar. If Desktop runs on that same machine, go to **Capabilities → Plugins → Rescan** and enable Blogwatcher.
 
 ### Remote Desktop clients
 
-If Desktop runs on a different machine, copy `desktop/plugin.js` to this location on the client:
+If Desktop runs elsewhere, copy `desktop/plugin.js` to this location on the client:
 
 ```text
 ~/.hermes/desktop-plugins/hermes-blogwatcher/plugin.js
@@ -46,7 +48,7 @@ If Desktop runs on a different machine, copy `desktop/plugin.js` to this locatio
 
 Rescan and enable the local plugin. Keep the backend and Desktop copies in sync; the client needs neither Python nor Blogwatcher.
 
-Optional backend variables: `BLOGWATCHER_BIN` (absolute CLI path) and `BLOGWATCHER_DB` (database override). AI uses your configured Hermes model; no separate API key is needed in the UI. Keep Hermes authentication enabled for remote access.
+On the backend, you can set `BLOGWATCHER_BIN` to the CLI's absolute path and `BLOGWATCHER_DB` to override its database. The plugin uses your configured Hermes model, so you don't need a separate API key in the UI. Keep Hermes authentication enabled for remote access.
 
 ## Development
 
@@ -60,6 +62,6 @@ python -m unittest discover -s tests -v
 node --experimental-vm-modules --test tests/test_ui.cjs tests/test_desktop.cjs tests/test_reader_ui.cjs
 ```
 
-Python tests need Hermes/FastAPI. CLI tests use a temporary database. Live inference tests are opt-in and may incur costs.
+Use an environment with Hermes/FastAPI for Python tests. CLI tests run against a temporary database. Live inference tests are opt-in and can incur costs.
 
 See [browser previews and verification details](docs/verification/reader-ui.md) for additional checks.
