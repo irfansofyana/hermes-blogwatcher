@@ -50,6 +50,13 @@ Rescan and enable the local plugin. Keep the backend and Desktop copies in sync;
 
 On the backend, you can set `BLOGWATCHER_BIN` to the CLI's absolute path and `BLOGWATCHER_DB` to override its database. The plugin uses your configured Hermes model, so you don't need a separate API key in the UI. Keep Hermes authentication enabled for remote access.
 
+## Data and permissions
+
+- The backend runs `blogwatcher` with argument lists, never a shell. The CLI reads its existing database and applies the source and read-state changes you request. Scans contact your subscribed sites.
+- Requested summaries fetch public HTTP(S) pages through short-lived Python retrieval and DNS workers. Article text goes to your configured Hermes model only after confirmation, as described above.
+- Saved summaries and source/model metadata are stored in `cache/blogwatcher-summaries` under the active Hermes home. They become stale after seven days and remain available until eviction, with a 50 MiB cache cap. The plugin reads Hermes's model configuration for its cache keys.
+- The plugin stores no credentials, collects no telemetry, and starts no scheduler, persistent background service or self-updater.
+
 ## Development
 
 Edit `ui/reader.js` and `ui/reader.css`, then rebuild and test:
