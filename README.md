@@ -4,7 +4,9 @@ Read and manage your [original Blogwatcher](https://github.com/Hyaxia/blogwatche
 
 ## Features
 
-- Unread/all inbox, source filters, pagination and read/unread controls.
+- A reading-first inbox with a collapsible source library, clear unread states, comfortable typography and responsive controls.
+- Light, dark or Follow Hermes appearance; comfortable or compact list density. Preferences stay local to Blogwatcher and never change the host theme.
+- Unread/all inbox, source filters, pagination and independent read/unread controls.
 - Add/remove sources and scan on demand. Removal deletes the source's articles.
 - Expand multiple articles inline, with formatted summaries and independent controls. Opening loads saved results without publisher access or inference.
 - Explicitly **Summarize** or **Regenerate** using your Hermes model. Neither action marks articles read.
@@ -44,11 +46,23 @@ Subscriptions/read state remain in the original CLI database. Successful summari
 
 ## Development
 
+Edit `ui/reader.js` and `ui/reader.css`, then rebuild the two standalone delivery files. The builder uses only Node's standard library. Installation needs no Node build or additional runtime dependencies. Scoped CSS is embedded because disk plugins are not processed by the host's Tailwind build.
+
 ```bash
+node scripts/build-ui.cjs
+node scripts/build-ui.cjs --check
 hermes plugins validate .
 python -m unittest discover -s tests -v
-node --test tests/test_ui.cjs
-node --experimental-vm-modules --test tests/test_desktop.cjs
+node --experimental-vm-modules --test tests/test_ui.cjs tests/test_desktop.cjs tests/test_reader_ui.cjs
 ```
 
-Run Python tests in an environment with Hermes/FastAPI. Real-CLI tests use a temporary database; set `BLOGWATCHER_TEST_BIN` if necessary. Live inference tests are opt-in and may spend tokens. The reader doesn't bypass paywalls or execute publisher JavaScript. Native agent chat embedding, source editing and scheduled scans are outside this plugin's scope.
+Optional interactive previews and real-browser checks use React, ReactDOM, esbuild and Playwright from an existing Hermes source checkout (`~/.hermes/hermes-agent`, or set `HERMES_SOURCE`). The browser test uses `/usr/bin/google-chrome` unless `CHROME_BIN` is set.
+
+```bash
+node scripts/preview-ui.cjs
+node tests/browser_smoke.cjs
+```
+
+The preview command prints two self-contained HTML paths under `TMPDIR` (or the system temporary directory). Both previews use explicit synthetic fixtures and the actual generated UI. They never touch the Blogwatcher database, publishers or model providers. `--output DIR` selects another preview directory; pass that same directory to `tests/browser_smoke.cjs`. Screenshot and browser-check results are saved there too.
+
+Run Python tests in an environment with Hermes/FastAPI. Real-CLI tests use a temporary database; set `BLOGWATCHER_TEST_BIN` if necessary. `HERMES_BRIDGE_HOST_TEST=1` enables the installed-runtime bridge test; leave `HERMES_BRIDGE_LIVE=0` to keep inference stubbed. Live inference tests are opt-in and may spend tokens. The reader doesn't bypass paywalls or execute publisher JavaScript. Native agent chat embedding, source editing and scheduled scans are outside this plugin's scope.
